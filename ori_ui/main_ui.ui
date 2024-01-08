@@ -235,7 +235,7 @@
           </font>
          </property>
          <property name="text">
-          <string>脑电图片识别</string>
+          <string>多模态识别</string>
          </property>
         </widget>
        </item>
