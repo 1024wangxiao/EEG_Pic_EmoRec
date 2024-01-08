@@ -48,8 +48,9 @@ class SVM:
 
         input_filename = path
         df = pd.read_excel(input_filename, engine='openpyxl', header=None)
-
-        data = df.iloc[1:, 2:].values
+        if df.shape[0]==1:
+            data = df.iloc[0:, 2:].values
+        else:data = df.iloc[1:, 2:].values
         data = np.array([data])
         data=np.squeeze(data, axis=0)
         # data=data.reshape((60, 252))

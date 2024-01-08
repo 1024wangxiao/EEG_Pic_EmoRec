@@ -11,7 +11,7 @@ def EEG_processing(path,save_path):
     raw.set_montage(montage)
     # 绘制原始脑电图
     raw.plot()
-    plt.savefig(save_path + 'raw_eeg_plot.jpg')
+    plt.savefig(save_path + 'raw_eeg_plot.png')
     # plt.show()
     # 绘制拓扑图
     layout = mne.channels.find_layout(raw.info, ch_type='eeg')

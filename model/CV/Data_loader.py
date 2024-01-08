@@ -68,7 +68,6 @@ def data_loader(datadir, batch_size=20, mode = 'train'):
             imgs_array = np.array(batch_imgs).astype('float32')
             labels_array = np.array(batch_labels).reshape(-1, 1)
             yield imgs_array, labels_array
-
     return reader
 
 # 定义验证集数据读取器

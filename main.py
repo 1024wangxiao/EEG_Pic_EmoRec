@@ -95,6 +95,7 @@ class Recognition:
     # 王肖
     def EegRec_single(self):
         svm = SVM()
+
         result_dict = svm.svm_singal_analysics(self.PathEeg_single)
 
         """
@@ -125,7 +126,7 @@ class Recognition:
         chart = (
             Bar()
                 .add_xaxis(['Anger', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise'])
-                .add_yaxis('Emotion', [result_dict['Anger'], result_dict['Disgust'], result_dict['Fear'],
+                .add_yaxis('', [result_dict['Anger'], result_dict['Disgust'], result_dict['Fear'],
                                        result_dict['Happy'], result_dict['Neutral'], result_dict['Sad'],
                                        result_dict['Surprise']],category_gap="60%",itemstyle_opts=opts.ItemStyleOpts(color=JsCode(color_function)))
                 .set_global_opts(title_opts=opts.TitleOpts(title="单点脑电识别", subtitle="Timi"))
@@ -155,7 +156,7 @@ class Recognition:
         result_dict_pc=cnn_predicted(self.PathPicture)
 
         # 加权融合
-        weighted_fusion = {}
+        result_dict = {}
 
         # SVM预测的权重
         weight_svm = 0.7
@@ -165,16 +166,55 @@ class Recognition:
         # 遍历每个情绪类别
         for emotion in result_list_eeg.keys():
             # 使用指定的权重结合预测概率
-            combined_prob = (weight_svm * result_list_eeg[emotion]) + (weight_cnn * result_dict_pc[emotion])
+            combined_prob = (weight_svm * result_list_eeg[emotion]) + (weight_cnn * result_dict_pc[emotion])*100
 
             # 存储合并的结果
-            weighted_fusion[emotion] = combined_prob
-
+            result_dict[emotion] = round(combined_prob, 2)
         # 打印最终的加权融合结果
-        print(weighted_fusion)
+        print(result_dict)
+        # 画个柱状图
+        color_function = """
+                      function (params) {
+                          if (params.name == 'Anger') 
+                              return 'red';
+                          else if (params.name=='Disgust') 
+                              return 'black';
+                          else if (params.name=='Fear') 
+                          return 'purple';
+                          else if (params.name=='Happy') 
+                          return 'orange';
+                          else if (params.name=='Neutral') 
+                          return 'pink';
+                          else if (params.name=='Sad') 
+                          return 'brown';
+                          else return 'green';
+                      }
+                      """
+        # 创建柱状图
+        chart = (
+            Bar()
+            .add_xaxis(['Anger', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise'])
+            .add_yaxis('', [result_dict['Anger'], result_dict['Disgust'], result_dict['Fear'],
+                                   result_dict['Happy'], result_dict['Neutral'], result_dict['Sad'],
+                                   result_dict['Surprise']], category_gap="60%",
+                       itemstyle_opts=opts.ItemStyleOpts(color=JsCode(color_function)))
+            .set_global_opts(title_opts=opts.TitleOpts(title="单点脑电识别", subtitle="Timi"))
+            .set_series_opts(
+                label_opts=opts.LabelOpts(
+                    is_show=True,
+                    position="top",
+                    formatter=JsCode("function (params) {return params.value + '%'}")
+                )
+            )
+        )
+        chart.render(r'D:\table\EEG_Pic_EmoRec\MultiRec_bar.html')
+        with open(r"D:\table\EEG_Pic_EmoRec\MultiRec_bar.html", "r", encoding="utf-8") as file:
+            html_content = file.read()
+            print("get html file!!")
+            # 将 HTML 页面加载到 QWebEngineView 中
+        self.ui.webEngineView.setHtml(html_content)
         """
-        {'Anger': 0.023364205314811017, 'Disgust': 0.040472567957784734, 'Fear': 0.002005849708668159, 
-        'Happy': 0.016077611617729075, 'Neutral': 0.15614961429628818, 'Sad': 0.7611916623586641, 'Surprise': 0.0007384832065796119}
+        {'Anger': 2.34, 'Disgust': 4.05, 'Fear': 0.2, 'Happy': 1.61, 'Neutral': 15.61, 'Sad': 76.12, 'Surprise': 0.07}
         """
 
     # 覃智科
